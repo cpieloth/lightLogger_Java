@@ -1,17 +1,15 @@
 package executor.lightLogger.level;
 
-
 public enum Default implements ILevel {
-	OFF(0, "OFF"), FATAL(1, "FATAL"),
-	ERROR(2, "ERROR"), WARN(4, "WARN"), INFO(8, "INFO"), DEBUG(
-			16, "DEBUG"), TRACE(32, "TRACE"), ALL(Integer.MAX_VALUE, "ALL");
+	OFF(0), FATAL(1), ERROR(2), WARN(4), INFO(8), DEBUG(16), TRACE(32), ALL(
+			Integer.MAX_VALUE);
 
 	private final int value;
-	private final String label;
+	private final String name;
 
-	private Default(int value, String label) {
+	private Default(int value) {
 		this.value = value;
-		this.label = label;
+		this.name = this.name();
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public enum Default implements ILevel {
 	}
 
 	@Override
-	public String getLabel() {
-		return label;
+	public String getName() {
+		return name;
 	}
 }

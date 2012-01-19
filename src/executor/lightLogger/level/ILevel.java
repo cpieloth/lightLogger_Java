@@ -4,5 +4,5 @@ public interface ILevel {
 
 	public int getValue();
 
-	public String getLabel();
+	public String getName();
 }

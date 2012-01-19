@@ -82,7 +82,7 @@ public abstract class AbstractLogger implements ILogger {
 	protected void log(Writer out, ILevel level, String message) {
 		if (this.evaluate(level))
 			try {
-				out.write("[" + level.getLabel() + "] " + name + ": " + message
+				out.write("[" + level.getName() + "] " + name + ": " + message
 						+ "\n");
 				out.flush();
 			} catch (IOException e) {

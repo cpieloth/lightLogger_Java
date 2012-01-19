@@ -4,11 +4,11 @@ package executor.lightLogger.level;
 public class Level implements ILevel {
 	
 	private final int value;
-	private final String label;
+	private final String name;
 	
-	public Level(int value, String label) {
+	public Level(String name, int value) {
 		this.value = value;
-		this.label = label;
+		this.name = name;
 	}
 
 	@Override
@@ -17,8 +17,8 @@ public class Level implements ILevel {
 	}
 
 	@Override
-	public String getLabel() {
-		return label;
+	public String getName() {
+		return name;
 	}
 
 }

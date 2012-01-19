@@ -41,7 +41,7 @@ public class Example {
 		log.info("coffee is ready");
 		log.debug("debug problems");
 		log.trace("trace method calls");
-		log.log(new Level(256, "COOKIES!"), "foo barrr");
+		log.log(new Level("COOKIES!", 256), "foo barrr");
 	}
 
 }
