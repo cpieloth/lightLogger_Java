@@ -5,6 +5,8 @@ import java.io.Writer;
 import java.util.Set;
 
 import executor.lightLogger.Logger;
+import executor.lightLogger.formatter.IFormatter;
+import executor.lightLogger.formatter.TimeFormatter;
 import executor.lightLogger.level.Default;
 import executor.lightLogger.level.ILevel;
 
@@ -18,8 +20,8 @@ import executor.lightLogger.level.ILevel;
 public abstract class AbstractLogger implements ILogger {
 
 	protected int logMask = Default.ALL.getValue();
-
 	protected String name;
+	protected IFormatter formatter = new TimeFormatter();
 
 	public AbstractLogger() {
 		this(ILogger.UNKNOWN_NAME);
@@ -43,12 +45,22 @@ public abstract class AbstractLogger implements ILogger {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public IFormatter getFormatter() {
+		return formatter;
+	}
+	
+	@Override
+	public void setFormatter(IFormatter formatter) {
+		this.formatter = formatter;
+	}
 
 	@Override
 	public int getLogMask() {
 		return logMask;
 	}
-	
+
 	@Override
 	public void setLogMask(Set<ILevel> level) {
 		this.logMask = 0;
@@ -62,7 +74,7 @@ public abstract class AbstractLogger implements ILogger {
 			}
 		}
 	}
-	
+
 	@Override
 	public void setLogMask(ILevel level) {
 		setLogMask(level.getValue());
@@ -78,12 +90,10 @@ public abstract class AbstractLogger implements ILogger {
 		return (this.logMask & level.getValue()) == level.getValue();
 	}
 
-
 	protected void log(Writer out, ILevel level, String message) {
 		if (this.evaluate(level))
 			try {
-				out.write("[" + level.getName() + "] " + name + ": " + message
-						+ "\n");
+				out.write(formatter.format(level, name, message) + "\n");
 				out.flush();
 			} catch (IOException e) {
 				Logger.error(AbstractLogger.class,

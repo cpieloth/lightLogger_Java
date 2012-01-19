@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
+import executor.lightLogger.formatter.BasicFormatter;
+import executor.lightLogger.formatter.IFormatter;
 import executor.lightLogger.level.ILevel;
 import executor.lightLogger.logger.ConsoleLogger;
 import executor.lightLogger.logger.ILogger;
@@ -20,8 +22,11 @@ public class Logger {
 
 	public static enum Config {
 		IMPLEMENTATION(Logger.class.getSimpleName() + ".implementation",
-				ConsoleLogger.class.getName()), LOG_MASK(Logger.class
-				.getSimpleName() + ".mask", String.valueOf(Integer.MAX_VALUE));
+				ConsoleLogger.class.getName()),
+		LOG_MASK(Logger.class.getSimpleName() + ".mask", 
+				String.valueOf(Integer.MAX_VALUE)), 
+		FORMATTER(Logger.class.getSimpleName() + ".formatter",
+				BasicFormatter.class.getName());
 
 		public final String key;
 		public final String defValue;
@@ -39,6 +44,7 @@ public class Logger {
 
 	private static Class<? extends ILogger> loggerClass = ConsoleLogger.class;
 	private static int mask = Integer.MAX_VALUE;
+	private static IFormatter formatter = new BasicFormatter();
 
 	public static ILogger getInstance(Class<?> name) {
 		if (name != null)
@@ -68,6 +74,7 @@ public class Logger {
 
 		logger.setName(name);
 		logger.setLogMask(mask);
+		logger.setFormatter(formatter);
 		logger.loadProperties(properties);
 
 		return logger;
@@ -92,11 +99,24 @@ public class Logger {
 			val = properties.getProperty(Config.IMPLEMENTATION.key,
 					Config.IMPLEMENTATION.defValue);
 			loggerClass = (Class<? extends ILogger>) Class.forName(val);
+		} catch (Exception e) {
+			err = true;
+		}
 
+		try {
+			val = properties.getProperty(Config.FORMATTER.key,
+					Config.FORMATTER.defValue);
+			formatter = ((Class<? extends IFormatter>) Class.forName(val))
+					.newInstance();
+		} catch (Exception e) {
+			err = true;
+		}
+
+		try {
 			val = properties.getProperty(Config.LOG_MASK.key,
 					Config.LOG_MASK.defValue);
 			mask = Integer.parseInt(val);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			err = true;
 		}
 
@@ -157,7 +177,7 @@ public class Logger {
 			}
 		}
 	}
-	
+
 	public static void setLogMask(ILevel level) {
 		setLogMask(level.getValue());
 	}
@@ -171,13 +191,21 @@ public class Logger {
 	public static void setLogMask(int value) {
 		mask = value;
 	}
-	
+
 	public static Class<? extends ILogger> getLoggerClass() {
 		return loggerClass;
 	}
-	
+
 	public static void setLoggerClass(Class<? extends ILogger> clazz) {
 		loggerClass = clazz;
+	}
+	
+	public static IFormatter getFormatter() {
+		return formatter;
+	}
+	
+	public static void setFormatter(IFormatter formatter) {
+		Logger.formatter = formatter;
 	}
 
 }
