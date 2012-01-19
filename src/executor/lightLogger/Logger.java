@@ -2,6 +2,10 @@ package executor.lightLogger;
 
 import java.util.Set;
 
+import executor.lightLogger.logger.ConsoleLogger;
+import executor.lightLogger.logger.FileLogger;
+import executor.lightLogger.logger.ILogger;
+
 /**
  * Central class for simple logging.
  * 
@@ -12,6 +16,27 @@ import java.util.Set;
 public class Logger {
 
 	private static ILogger logger = new BasicLogger();
+	
+	public static final String UNKNOWN_SOURCE = "UNKNOWN_SOURCE";
+	
+	public static ILogger getInstance(Class<?> name) {
+		if(name != null)
+			return getInstance(name.getName());
+		else
+			return getInstance(UNKNOWN_SOURCE);
+	}
+	
+	public static ILogger getInstance(Object name) {
+		if(name != null)
+			return getInstance(name.getClass());
+		else
+			return getInstance(UNKNOWN_SOURCE);
+	}
+	
+	public static ILogger getInstance(String name) {
+		// TODO set logmask
+		return new FileLogger(name);
+	}
 
 	/**
 	 * 

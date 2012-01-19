@@ -3,6 +3,8 @@ package executor.lightLogger;
 import java.io.PrintStream;
 import java.util.Set;
 
+import executor.lightLogger.logger.ILogger;
+
 /**
  * Basic implementation of ILogger. Output on stdo. Format: [Level.getLabel()]
  * class: message
@@ -124,5 +126,47 @@ public class BasicLogger implements ILogger {
 	@Override
 	public void logDebug(Object obj, String message) {
 		this.log(Level.Default.DEBUG.getInstance(), obj, message);
+	}
+
+	@Override
+	public void log(Level level, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fatal(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void error(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void warn(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void info(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void debug(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void trace(String message) {
+		// TODO Auto-generated method stub
+		
 	}
 }

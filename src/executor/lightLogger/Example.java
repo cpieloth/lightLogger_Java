@@ -3,6 +3,8 @@ package executor.lightLogger;
 import java.util.HashSet;
 import java.util.Set;
 
+import executor.lightLogger.logger.ILogger;
+
 /**
  * Example how LightLogger could be used.
  * 
@@ -26,6 +28,11 @@ public class Example {
 		Logger.setLogMask(newLogMask);
 		
 		doLogCalls();
+		
+		System.out.println("--- New logger ---");
+		ILogger log = Logger.getInstance(Example.class);
+		log.debug("debug");
+		log.trace("trace");
 	}
 	
 	private static void doLogCalls() {

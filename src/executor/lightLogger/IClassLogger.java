@@ -9,6 +9,7 @@ package executor.lightLogger;
  */
 public interface IClassLogger extends IMaskable {
 
+	@Deprecated
 	/**
 	 * Logs a message for a class by using the specified log level.
 	 * 
@@ -18,6 +19,7 @@ public interface IClassLogger extends IMaskable {
 	 */
 	public void log(Level level, Class<?> clazz, String message);
 
+	@Deprecated
 	/**
 	 * Logs a message by using the error log level.
 	 * 
@@ -26,6 +28,7 @@ public interface IClassLogger extends IMaskable {
 	 */
 	public void logError(Class<?> clazz, String message);
 
+	@Deprecated
 	/**
 	 * Logs a message by using the warn log level.
 	 * 
@@ -34,6 +37,7 @@ public interface IClassLogger extends IMaskable {
 	 */
 	public void logWarn(Class<?> clazz, String message);
 
+	@Deprecated
 	/**
 	 * Logs a message by using the info log level.
 	 * 
@@ -42,6 +46,7 @@ public interface IClassLogger extends IMaskable {
 	 */
 	public void logInfo(Class<?> clazz, String message);
 
+	@Deprecated
 	/**
 	 * Logs a message by using the trace log level.
 	 * 
@@ -50,6 +55,7 @@ public interface IClassLogger extends IMaskable {
 	 */
 	public void logTrace(Class<?> clazz, String message);
 
+	@Deprecated
 	/**
 	 * Logs a message by using the debug log level.
 	 * 
