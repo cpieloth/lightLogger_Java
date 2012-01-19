@@ -42,43 +42,39 @@ public class FileLogger extends AbstractLogger {
 		super.finalize();
 	}
 
-	private void log(ILevel level, String source, String message) {
-		this.log(out, level, message);
-	}
-
 	@Override
 	public void log(ILevel level, String message) {
-		log(level, name, message);
+		super.log(out, level, message);
 	}
 
 	@Override
 	public void fatal(String message) {
-		log(Default.FATAL, name, message);
+		log(Default.FATAL, message);
 	}
 
 	@Override
 	public void error(String message) {
-		log(Default.ERROR, name, message);
+		log(Default.ERROR, message);
 	}
 
 	@Override
 	public void warn(String message) {
-		log(Default.WARN, name, message);
+		log(Default.WARN, message);
 	}
 
 	@Override
 	public void info(String message) {
-		log(Default.INFO, name, message);
+		log(Default.INFO, message);
 	}
 
 	@Override
 	public void debug(String message) {
-		log(Default.DEBUG, name, message);
+		log(Default.DEBUG, message);
 	}
 
 	@Override
 	public void trace(String message) {
-		log(Default.TRACE, name, message);
+		log(Default.TRACE, message);
 	}
 
 	@Override

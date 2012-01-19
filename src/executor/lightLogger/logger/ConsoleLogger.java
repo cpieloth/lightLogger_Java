@@ -10,7 +10,6 @@ import executor.lightLogger.level.ILevel;
 public class ConsoleLogger extends AbstractLogger {
 
 	private Writer out = new OutputStreamWriter(System.out);
-
 	private Writer err = new OutputStreamWriter(System.err);
 
 	public ConsoleLogger() {
@@ -35,46 +34,42 @@ public class ConsoleLogger extends AbstractLogger {
 		return false;
 	}
 
-	private void log(ILevel level, String source, String message) {
-		if (Default.ERROR.getValue() == level.getValue())
-			this.log(err, level, message);
-		else
-			this.log(out, level, message);
-	}
-
 	@Override
 	public void log(ILevel level, String message) {
-		log(level, name, message);
+		if (Default.ERROR.getValue() == level.getValue() || Default.FATAL.getValue() == level.getValue())
+			super.log(err, level, message);
+		else
+			super.log(out, level, message);
 	}
 
 	@Override
 	public void fatal(String message) {
-		log(Default.FATAL, name, message);
+		log(Default.FATAL, message);
 	}
 
 	@Override
 	public void error(String message) {
-		log(Default.ERROR, name, message);
+		log(Default.ERROR, message);
 	}
 
 	@Override
 	public void warn(String message) {
-		log(Default.WARN, name, message);
+		log(Default.WARN, message);
 	}
 
 	@Override
 	public void info(String message) {
-		log(Default.INFO, name, message);
+		log(Default.INFO, message);
 	}
 
 	@Override
 	public void debug(String message) {
-		log(Default.DEBUG, name, message);
+		log(Default.DEBUG, message);
 	}
 
 	@Override
 	public void trace(String message) {
-		log(Default.TRACE, name, message);
+		log(Default.TRACE, message);
 	}
 
 }
