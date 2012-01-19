@@ -1,8 +1,12 @@
 package executor.lightLogger.logger;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Set;
 
-import executor.lightLogger.Level;
+import executor.lightLogger.Logger;
+import executor.lightLogger.level.Default;
+import executor.lightLogger.level.ILevel;
 
 /**
  * Basic implementation of ILogger. Output on stdo. Format: [Level.getLabel()]
@@ -12,30 +16,44 @@ import executor.lightLogger.Level;
  * 
  */
 public abstract class AbstractLogger implements ILogger {
-	
-	protected int logMask = Level.Default.ALL.getInstance().getValue();
-	
+
+	protected int logMask = Default.ALL.getValue();
+
 	protected String name;
-	
+
+	public AbstractLogger() {
+		this(ILogger.UNKNOWN_NAME);
+	}
+
 	public AbstractLogger(String name) {
 		this(name, Integer.MAX_VALUE);
 	}
-	
+
 	public AbstractLogger(String name, int logMask) {
 		this.name = name;
 		this.logMask = logMask;
 	}
 
 	@Override
-	public int getLogMask() {
-		return this.logMask;
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public void setLogMask(Set<Level> level) {
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public int getLogMask() {
+		return logMask;
+	}
+	
+	@Override
+	public void setLogMask(Set<ILevel> level) {
 		this.logMask = 0;
 		int tmp;
-		for (Level lvl : level) {
+		for (ILevel lvl : level) {
 			tmp = this.logMask;
 			this.logMask += lvl.getValue();
 			if (this.logMask < tmp) {
@@ -44,15 +62,33 @@ public abstract class AbstractLogger implements ILogger {
 			}
 		}
 	}
+	
+	@Override
+	public void setLogMask(ILevel level) {
+		setLogMask(level.getValue());
+	}
 
 	@Override
 	public void setLogMask(int value) {
 		this.logMask = value;
 	}
-	
+
 	@Override
-	public boolean evaluate(Level level) {
+	public boolean evaluate(ILevel level) {
 		return (this.logMask & level.getValue()) == level.getValue();
+	}
+
+
+	protected void log(Writer out, ILevel level, String message) {
+		if (this.evaluate(level))
+			try {
+				out.write("[" + level.getLabel() + "] " + name + ": " + message
+						+ "\n");
+				out.flush();
+			} catch (IOException e) {
+				Logger.error(AbstractLogger.class,
+						"Could not write to destination!");
+			}
 	}
 
 }

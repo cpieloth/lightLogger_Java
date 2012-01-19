@@ -3,6 +3,9 @@ package executor.lightLogger;
 import java.util.HashSet;
 import java.util.Set;
 
+import executor.lightLogger.level.Default;
+import executor.lightLogger.level.ILevel;
+import executor.lightLogger.level.Level;
 import executor.lightLogger.logger.ILogger;
 
 /**
@@ -14,35 +17,31 @@ import executor.lightLogger.logger.ILogger;
 public class Example {
 
 	public static void main(String[] args) {
-		Logger.setLogger(new BasicLogger());
-		
-		doLogCalls();
-		
-		Logger.setLogMask(Level.Default.ERROR.getValue());
-		
-		doLogCalls();
-		
-		Set<Level> newLogMask = new HashSet<Level>();
-		newLogMask.add(Level.Default.INFO.getInstance());
-		newLogMask.add(Level.Default.WARN.getInstance());
-		Logger.setLogMask(newLogMask);
-		
-		doLogCalls();
-		
-		System.out.println("--- New logger ---");
 		ILogger log = Logger.getInstance(Example.class);
-		log.debug("debug");
-		log.trace("trace");
+		
+		doLogCalls(log);
+		
+		log.setLogMask(Default.ERROR);
+		
+		doLogCalls(log);
+		
+		Set<ILevel> newLogMask = new HashSet<ILevel>();
+		newLogMask.add(Default.INFO);
+		newLogMask.add(Default.WARN);
+		log.setLogMask(newLogMask);
+		
+		doLogCalls(log);
 	}
 	
-	private static void doLogCalls() {
-		System.out.println("LogMask: " + Logger.getLogMask());
-		Logger.logError(Example.class, "error ...");
-		Logger.logWarn(Example.class, "warn ...");
-		Logger.logInfo(Example.class, "info ...");
-		Logger.logTrace(Example.class, "trace ...");
-		Logger.logDebug(Example.class, "debug ...");
-		Logger.log(new Level(Level.Default.ERROR.getInstance().getValue(), "E-R-R-O-R"), Example.class, "e-r-r-o-r ...");
+	private static void doLogCalls(ILogger log) {
+		System.out.println("LogMask: " + log.getLogMask());
+		log.fatal("fatal crash");
+		log.error("error occurred");
+		log.warn("warning about coffee stock");
+		log.info("coffee is ready");
+		log.debug("debug problems");
+		log.trace("trace method calls");
+		log.log(new Level(256, "COOKIES!"), "foo barrr");
 	}
 
 }

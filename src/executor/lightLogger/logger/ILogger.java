@@ -1,17 +1,22 @@
 package executor.lightLogger.logger;
 
+import java.util.Properties;
 import java.util.Set;
 
-import executor.lightLogger.IClassLogger;
-import executor.lightLogger.IObjectLogger;
-import executor.lightLogger.Level;
+import executor.lightLogger.level.ILevel;
 
 
-public interface ILogger extends IObjectLogger, IClassLogger/*, IMaskable*/ {
+public interface ILogger {
 
-	public void log(Level level, String source, String message);
+	public static final String UNKNOWN_NAME = "UNKNOWN_NAME";
 	
-	public void log(Level level, String message);
+	public String getName();
+	
+	public void setName(String name);
+	
+	public boolean loadProperties(Properties properties);
+	
+	public void log(ILevel level, String message);
 	
 	public void fatal(String message);
 	
@@ -38,7 +43,9 @@ public interface ILogger extends IObjectLogger, IClassLogger/*, IMaskable*/ {
 	 * @param level
 	 *            Set of levels to log
 	 */
-	public void setLogMask(Set<Level> level);
+	public void setLogMask(Set<ILevel> level);
+	
+	public void setLogMask(ILevel value);
 
 	/**
 	 * Sets the log mask for log level selection.
@@ -54,6 +61,6 @@ public interface ILogger extends IObjectLogger, IClassLogger/*, IMaskable*/ {
 	 * @param level
 	 * @return true if level is in logmask.
 	 */
-	public boolean evaluate(Level level);
+	public boolean evaluate(ILevel level);
 	
 }

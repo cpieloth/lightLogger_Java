@@ -1,45 +1,38 @@
 package executor.lightLogger.logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Properties;
 
-import executor.lightLogger.Level;
+import executor.lightLogger.Logger;
+import executor.lightLogger.level.Default;
+import executor.lightLogger.level.ILevel;
 
 public class FileLogger extends AbstractLogger {
 
-	private PrintStream out;
+	public static enum Config {
+		FILENAME(FileLogger.class.getSimpleName() + ".file", FileLogger.class
+				.getSimpleName() + ".log");
 
-	private static final String FILE = "test.log";
+		public final String key;
+		public final String defValue;
+
+		Config(String key, String val) {
+			this.key = key;
+			this.defValue = val;
+		}
+	}
+
+	private Writer out = null;
+
+	public FileLogger() {
+		this(ILogger.UNKNOWN_NAME);
+	}
 
 	public FileLogger(String source) {
 		super(source);
-
-		File file = new File(FILE);
-		if (!file.exists()) {
-			try {
-				if (file.createNewFile())
-					out = new PrintStream(file);
-			} catch (IOException e) {
-				System.err.println(FileLogger.class.getSimpleName()
-						+ ": Could not get write access to file!");
-				out = System.out;
-			}
-		} else if (file.canWrite()) {
-			try {
-				out = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				System.err.println(FileLogger.class.getSimpleName()
-						+ ": Could not get write access to file!");
-				out = System.out;
-			}
-		} else {
-			System.err.println(FileLogger.class.getSimpleName()
-					+ ": Could not get write access to file!");
-			out = System.out;
-		}
-
 	}
 
 	@Override
@@ -49,124 +42,69 @@ public class FileLogger extends AbstractLogger {
 		super.finalize();
 	}
 
-	private void log(PrintStream ps, Level level, String source, String message) {
-		if (this.evaluate(level))
-			ps.println("[" + level.getLabel() + "] " + source + ": " + message);
-	}
-
-	/* TODO change to private */
-	public void log(Level level, String source, String message) {
-			this.log(out, level, source, message);
+	private void log(ILevel level, String source, String message) {
+		this.log(out, level, message);
 	}
 
 	@Override
-	public void log(Level level, String message) {
+	public void log(ILevel level, String message) {
 		log(level, name, message);
 	}
 
 	@Override
 	public void fatal(String message) {
-		/* TODO change to fatal level */
-		log(Level.Default.ERROR.getInstance(), name, message);
+		log(Default.FATAL, name, message);
 	}
 
 	@Override
 	public void error(String message) {
-		log(Level.Default.ERROR.getInstance(), name, message);
+		log(Default.ERROR, name, message);
 	}
 
 	@Override
 	public void warn(String message) {
-		log(Level.Default.WARN.getInstance(), name, message);
+		log(Default.WARN, name, message);
 	}
 
 	@Override
 	public void info(String message) {
-		log(Level.Default.INFO.getInstance(), name, message);
+		log(Default.INFO, name, message);
 	}
 
 	@Override
 	public void debug(String message) {
-		log(Level.Default.DEBUG.getInstance(), name, message);
+		log(Default.DEBUG, name, message);
 	}
 
 	@Override
 	public void trace(String message) {
-		log(Level.Default.TRACE.getInstance(), name, message);
-	}
-
-	/* ------ OLD ------ */
-
-	@Override
-	public void log(Level level, Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
+		log(Default.TRACE, name, message);
 	}
 
 	@Override
-	public void logError(Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
+	public boolean loadProperties(Properties properties) {
+		boolean success = true;
+		if (properties == null) {
+			success = false;
+			return success;
+		}
 
-	@Override
-	public void logWarn(Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
+		String val = properties.getProperty(Config.FILENAME.key,
+				Config.FILENAME.defValue);
 
-	@Override
-	public void logInfo(Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
+		try {
+			out = new BufferedWriter(new FileWriter(val, true));
+		} catch (Exception e) {
+			success = false;
+		}
 
-	@Override
-	public void logTrace(Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
+		if (!success) {
+			out = new OutputStreamWriter(System.out);
+			Logger.error(FileLogger.class,
+					"Could not open file! Using System.out instead.");
+		}
 
-	@Override
-	public void logDebug(Object obj, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
-
-	@Override
-	public void log(Level level, Class<?> clazz, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
-
-	@Override
-	public void logError(Class<?> clazz, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
-
-	@Override
-	public void logWarn(Class<?> clazz, String message) {
-		log(out, Level.Default.ERROR.getInstance(), this.getClass()
-				.getSimpleName(), " Method not anymore supported!");
-	}
-
-	@Override
-	public void logInfo(Class<?> clazz, String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void logTrace(Class<?> clazz, String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void logDebug(Class<?> clazz, String message) {
-		// TODO Auto-generated method stub
-
+		return success;
 	}
 
 }
