@@ -88,11 +88,7 @@ public class FileLogger extends AbstractLogger {
 		String val = properties.getProperty(Config.FILENAME.key,
 				Config.FILENAME.defValue);
 
-		try {
-			out = new BufferedWriter(new FileWriter(val, true));
-		} catch (Exception e) {
-			success = false;
-		}
+		success &= setFile(val);
 
 		if (!success) {
 			out = new OutputStreamWriter(System.out);
@@ -101,6 +97,18 @@ public class FileLogger extends AbstractLogger {
 		}
 
 		return success;
+	}
+	
+	public boolean setFile(String file) {
+		try {
+			if(out != null)
+				out.close();
+			
+			out = new BufferedWriter(new FileWriter(file, true));
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 }
