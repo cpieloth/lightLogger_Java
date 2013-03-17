@@ -1,5 +1,6 @@
 package executor.lightLogger.logger;
 
+import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Properties;
@@ -9,8 +10,9 @@ import executor.lightLogger.level.ILevel;
 
 public class ConsoleLogger extends AbstractLogger {
 
-	private Writer out = new OutputStreamWriter(System.out);
-	private Writer err = new OutputStreamWriter(System.err);
+	// NOTE: Do not close writer which contain System.out/System.err, otherwise all syso's won't work!
+	private Writer out = new BufferedWriter(new OutputStreamWriter(System.out));
+	private Writer err = new BufferedWriter(new OutputStreamWriter(System.err));
 
 	public ConsoleLogger() {
 		super();
@@ -19,16 +21,7 @@ public class ConsoleLogger extends AbstractLogger {
 	public ConsoleLogger(String name) {
 		super(name);
 	}
-
-	protected void finalize() throws Throwable {
-		if (out != null)
-			out.close();
-		if (err != null)
-			err.close();
-
-		super.finalize();
-	}
-
+	
 	@Override
 	public boolean loadProperties(Properties properties) {
 		return false;
