@@ -9,15 +9,15 @@ import executor.lightLogger.level.ILevel;
 public interface ILogger {
 
 	public static final String UNKNOWN_NAME = "UNKNOWN_NAME";
-	
+
 	public boolean loadProperties(Properties properties);
 
 	public String getName();
 
-	public void setName(String name);	
+	public void setName(String name);
 
 	public IFormatter getFormatter();
-	
+
 	public void setFormatter(IFormatter formatter);
 
 	/**
@@ -53,18 +53,18 @@ public interface ILogger {
 	 */
 	public boolean evaluate(ILevel level);
 
-	public void log(ILevel level, String message);
+	public void log(ILevel level, Object message);
 
-	public void fatal(String message);
+	public void fatal(Object message);
 
-	public void error(String message);
+	public void error(Object message);
 
-	public void warn(String message);
+	public void warn(Object message);
 
-	public void info(String message);
+	public void info(Object message);
 
-	public void debug(String message);
+	public void debug(Object message);
 
-	public void trace(String message);
+	public void trace(Object message);
 
 }

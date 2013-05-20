@@ -6,7 +6,7 @@ import executor.lightLogger.logger.ILogger;
 public abstract class AbstractFormatter implements IFormatter {
 
 	@Override
-	public String format(ILevel level, String message) {
+	public String format(ILevel level, Object message) {
 		return format(level, ILogger.UNKNOWN_NAME, message);
 	}
 

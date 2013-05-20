@@ -90,7 +90,7 @@ public abstract class AbstractLogger implements ILogger {
 		return (this.logMask & level.getValue()) == level.getValue();
 	}
 
-	protected void log(Writer out, ILevel level, String message) {
+	protected void log(Writer out, ILevel level, Object message) {
 		if (this.evaluate(level))
 			try {
 				out.write(formatter.format(level, name, message) + "\n");
