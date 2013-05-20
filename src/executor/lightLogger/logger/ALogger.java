@@ -6,7 +6,7 @@ import executor.lightLogger.level.Default;
 import executor.lightLogger.level.ILevel;
 
 /**
- * Basic implementation of ILogger.
+ * Helper class for implementations of ILogger.
  * 
  * @author executor
  * 
@@ -46,7 +46,18 @@ public abstract class ALogger implements ILogger {
 
 	@Override
 	public void setLogMask(Set<ILevel> level) {
-		this.logMask = LogHelper.getLogMask(level);
+		this.logMask =0;
+		int tmp;
+		for (ILevel lvl : level) {
+			tmp = logMask;
+			logMask += lvl.getValue();
+			// Check for int overflow
+			if (logMask < tmp) {
+				logMask = tmp;
+				return;
+			}
+		}
+		return;
 	}
 
 	@Override
@@ -57,6 +68,10 @@ public abstract class ALogger implements ILogger {
 	@Override
 	public void setLogMask(int value) {
 		this.logMask = value;
+	}
+	
+	protected boolean evaluate(ILevel level) {
+		return (logMask & level.getValue()) == level.getValue();
 	}
 
 }

@@ -11,7 +11,7 @@ import executor.lightLogger.formatter.IFormatter;
 import executor.lightLogger.level.Default;
 import executor.lightLogger.level.ILevel;
 
-public class ConsoleLogger extends ALoggerFormatable {
+public class ConsoleLogger extends ALoggerWriter {
 
 	public static enum Config {
 		FORMATTER(ConsoleLogger.class.getSimpleName() + ".formatter",
@@ -68,35 +68,12 @@ public class ConsoleLogger extends ALoggerFormatable {
 		else
 			super.log(out, level, message);
 	}
-
+	
 	@Override
-	public void fatal(Object message) {
-		log(Default.FATAL, message);
+	public void log(ILevel level, Object message, Throwable throwable) {
+		if (Default.ERROR.getValue() == level.getValue() || Default.FATAL.getValue() == level.getValue())
+			super.log(err, level, message, throwable);
+		else
+			super.log(out, level, message, throwable);
 	}
-
-	@Override
-	public void error(Object message) {
-		log(Default.ERROR, message);
-	}
-
-	@Override
-	public void warn(Object message) {
-		log(Default.WARN, message);
-	}
-
-	@Override
-	public void info(Object message) {
-		log(Default.INFO, message);
-	}
-
-	@Override
-	public void debug(Object message) {
-		log(Default.DEBUG, message);
-	}
-
-	@Override
-	public void trace(Object message) {
-		log(Default.TRACE, message);
-	}
-
 }

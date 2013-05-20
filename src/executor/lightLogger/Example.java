@@ -33,10 +33,17 @@ public class Example {
 		doLogCalls(log);
 	}
 	
+	@SuppressWarnings("null")
 	private static void doLogCalls(ILogger log) {
 		System.out.println("LogMask: " + log.getLogMask());
 		log.fatal("fatal crash");
 		log.error("error occurred");
+		Object o = null;
+		try {
+			o.toString();
+		} catch(Exception e) {
+			log.error("Error on calling toString()", e);
+		}
 		log.warn("warning about coffee stock");
 		log.info("coffee is ready");
 		log.debug("debug problems");

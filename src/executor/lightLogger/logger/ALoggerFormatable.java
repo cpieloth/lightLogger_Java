@@ -1,18 +1,12 @@
 package executor.lightLogger.logger;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import executor.lightLogger.Logger;
 import executor.lightLogger.formatter.BasicFormatter;
 import executor.lightLogger.formatter.IFormatter;
-import executor.lightLogger.level.ILevel;
 
 
 /**
- * Basic implementation of ILogger.
+ * Helper class for implementations of ILoggerFormatable.
  * 
- * Format: [Level.getLabel()] class: message
  * @author executor
  *
  */
@@ -42,14 +36,5 @@ public abstract class ALoggerFormatable extends ALogger implements
 	public void setFormatter(IFormatter formatter) {
 		this.formatter = formatter;
 	}
-
-	protected void log(Writer out, ILevel level, Object message) {
-		if (LogHelper.evaluate(level, logMask))
-			try {
-				out.write(formatter.format(level, name, message) + "\n");
-				out.flush();
-			} catch (IOException e) {
-				Logger.error(ALoggerFormatable.class, "Could not write to destination!");
-			}
-	}
+	
 }

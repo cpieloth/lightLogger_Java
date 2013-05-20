@@ -9,10 +9,9 @@ import java.util.Properties;
 import executor.lightLogger.Logger;
 import executor.lightLogger.formatter.BasicFormatter;
 import executor.lightLogger.formatter.IFormatter;
-import executor.lightLogger.level.Default;
 import executor.lightLogger.level.ILevel;
 
-public class FileLogger extends ALoggerFormatable {
+public class FileLogger extends ALoggerWriter {
 
 	public static enum Config {
 		FORMATTER(FileLogger.class.getSimpleName() + ".formatter",
@@ -50,35 +49,10 @@ public class FileLogger extends ALoggerFormatable {
 	public void log(ILevel level, Object message) {
 		super.log(out, level, message);
 	}
-
+	
 	@Override
-	public void fatal(Object message) {
-		log(Default.FATAL, message);
-	}
-
-	@Override
-	public void error(Object message) {
-		log(Default.ERROR, message);
-	}
-
-	@Override
-	public void warn(Object message) {
-		log(Default.WARN, message);
-	}
-
-	@Override
-	public void info(Object message) {
-		log(Default.INFO, message);
-	}
-
-	@Override
-	public void debug(Object message) {
-		log(Default.DEBUG, message);
-	}
-
-	@Override
-	public void trace(Object message) {
-		log(Default.TRACE, message);
+	public void log(ILevel level, Object message, Throwable throwable) {
+		super.log(out, level, message, throwable);
 	}
 
 	@Override
