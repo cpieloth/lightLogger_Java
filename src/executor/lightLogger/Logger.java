@@ -19,14 +19,11 @@ import executor.lightLogger.logger.ILogger;
  */
 
 public class Logger {
-
 	public static enum Config {
 		IMPLEMENTATION(Logger.class.getSimpleName() + ".implementation",
 				ConsoleLogger.class.getName()),
 		LOG_MASK(Logger.class.getSimpleName() + ".mask", 
-				String.valueOf(Integer.MAX_VALUE)), 
-		FORMATTER(Logger.class.getSimpleName() + ".formatter",
-				BasicFormatter.class.getName());
+				String.valueOf(Integer.MAX_VALUE)); 
 
 		public final String key;
 		public final String defValue;
@@ -74,7 +71,6 @@ public class Logger {
 
 		logger.setName(name);
 		logger.setLogMask(mask);
-		logger.setFormatter(formatter);
 		logger.loadProperties(properties);
 
 		return logger;
@@ -99,15 +95,6 @@ public class Logger {
 			val = properties.getProperty(Config.IMPLEMENTATION.key,
 					Config.IMPLEMENTATION.defValue);
 			loggerClass = (Class<? extends ILogger>) Class.forName(val);
-		} catch (Exception e) {
-			err = true;
-		}
-
-		try {
-			val = properties.getProperty(Config.FORMATTER.key,
-					Config.FORMATTER.defValue);
-			formatter = ((Class<? extends IFormatter>) Class.forName(val))
-					.newInstance();
 		} catch (Exception e) {
 			err = true;
 		}

@@ -7,12 +7,16 @@ import java.io.Writer;
 import java.util.Properties;
 
 import executor.lightLogger.Logger;
+import executor.lightLogger.formatter.BasicFormatter;
+import executor.lightLogger.formatter.IFormatter;
 import executor.lightLogger.level.Default;
 import executor.lightLogger.level.ILevel;
 
-public class FileLogger extends AbstractLogger {
+public class FileLogger extends ALoggerFormatable {
 
 	public static enum Config {
+		FORMATTER(FileLogger.class.getSimpleName() + ".formatter",
+				BasicFormatter.class.getName()),
 		FILENAME(FileLogger.class.getSimpleName() + ".file", FileLogger.class
 				.getSimpleName() + ".log");
 
@@ -79,13 +83,25 @@ public class FileLogger extends AbstractLogger {
 
 	@Override
 	public boolean loadProperties(Properties properties) {
-		boolean success = true;
 		if (properties == null) {
-			success = false;
-			return success;
+			return false;
 		}
 
-		String val = properties.getProperty(Config.FILENAME.key,
+		boolean success = true;
+
+		String val;
+		try {
+			val = properties.getProperty(Config.FORMATTER.key,
+					Config.FORMATTER.defValue);
+			formatter = ((Class<? extends IFormatter>) Class.forName(val))
+					.newInstance();
+		} catch (Exception e) {
+			Logger.error(ALoggerFormatable.class,
+					"Could instanciate formatter!");
+			success = false;
+		}
+
+		val = properties.getProperty(Config.FILENAME.key,
 				Config.FILENAME.defValue);
 
 		success &= setFile(val);
@@ -98,12 +114,12 @@ public class FileLogger extends AbstractLogger {
 
 		return success;
 	}
-	
+
 	public boolean setFile(String file) {
 		try {
-			if(out != null)
+			if (out != null)
 				out.close();
-			
+
 			out = new BufferedWriter(new FileWriter(file, true));
 		} catch (Exception e) {
 			return false;

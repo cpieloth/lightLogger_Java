@@ -3,11 +3,10 @@ package executor.lightLogger.logger;
 import java.util.Properties;
 import java.util.Set;
 
-import executor.lightLogger.formatter.IFormatter;
 import executor.lightLogger.level.ILevel;
 
 public interface ILogger {
-
+	
 	public static final String UNKNOWN_NAME = "UNKNOWN_NAME";
 
 	public boolean loadProperties(Properties properties);
@@ -15,10 +14,6 @@ public interface ILogger {
 	public String getName();
 
 	public void setName(String name);
-
-	public IFormatter getFormatter();
-
-	public void setFormatter(IFormatter formatter);
 
 	/**
 	 * 
@@ -44,14 +39,6 @@ public interface ILogger {
 	 *            Log mask as value.
 	 */
 	public void setLogMask(int value);
-
-	/**
-	 * Checks if level is in logmask.
-	 * 
-	 * @param level
-	 * @return true if level is in logmask.
-	 */
-	public boolean evaluate(ILevel level);
 
 	public void log(ILevel level, Object message);
 

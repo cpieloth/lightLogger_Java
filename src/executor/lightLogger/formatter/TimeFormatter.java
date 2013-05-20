@@ -5,7 +5,7 @@ import java.util.Date;
 
 import executor.lightLogger.level.ILevel;
 
-public class TimeFormatter extends AbstractFormatter {
+public class TimeFormatter extends AFormatter {
 
 	private static final SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
 	
