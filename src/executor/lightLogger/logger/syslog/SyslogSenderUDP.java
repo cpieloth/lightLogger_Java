@@ -11,28 +11,57 @@ import java.util.Date;
  */
 public class SyslogSenderUDP implements ISyslogSender {
 
+    private static SyslogSenderUDP instance = null;
     private InetAddress address;
     private int port;
-
-    private static SyslogSenderUDP instance = null;
-
-    public static synchronized SyslogSenderUDP getInstance(String address, int port) {
-        if (instance == null)
-            try {
-                instance = new SyslogSenderUDP(address, port);
-            } catch (Exception e) {
-                Logger.error(SyslogSenderUDP.class, e.getMessage());
-                return null;
-            }
-        return instance;
-    }
 
     private SyslogSenderUDP(String address, int port) throws UnknownHostException {
         this.address = InetAddress.getByName(address);
         this.port = port;
     }
 
-    public boolean sendMessage(SyslogMessageBSD syslogMsg) {
+    public static synchronized SyslogSenderUDP getInstance(String address, int port) {
+        if (instance == null)
+            try {
+                instance = new SyslogSenderUDP(address, port);
+            } catch (Exception e) {
+                Logger.error(SyslogSenderUDP.class, "Could not create instance: " + e.getMessage());
+                instance = null;
+            }
+        return instance;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("fff");
+        try {
+            SyslogSenderUDP syslogSender = SyslogSenderUDP.getInstance("192.168.0.117", 514);
+            SyslogMessageBSD sm = new SyslogMessageBSD();
+            sm.setPrival(EFacility.LOCAL1, ESeverity.ERROR);
+            sm.setHostname("executor");
+            sm.setTag("syslogtest");
+            sm.setMsg("st messagwereq42");
+            sm.setDate(new Date(System.currentTimeMillis()));
+            syslogSender.sendMessage(sm);
+        } catch (Exception e) {
+            Logger.error(SyslogSenderUDP.class, e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean connect() {
+        if (address != null)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public boolean disconnect() {
+        return true;
+    }
+
+    @Override
+    public boolean sendMessage(ISyslogMessage syslogMsg) {
         try {
             final byte[] data = syslogMsg.getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, this.address, this.port);
@@ -50,22 +79,5 @@ public class SyslogSenderUDP implements ISyslogSender {
         }
         return true;
     }
-
-    public static void main(String[] args) {
-        System.out.println("fff");
-        try {
-            SyslogSenderUDP syslogSender = SyslogSenderUDP.getInstance("192.168.0.117", 514);
-            SyslogMessageBSD sm = new SyslogMessageBSD();
-            sm.setPrival(EFacility.LOCAL1, ESeverity.ERROR);
-            sm.setHostname("executor");
-            sm.setTag("syslogtest");
-            sm.setMsg("st messagwereq8");
-            sm.setDate(new Date(System.currentTimeMillis()));
-            syslogSender.sendMessage(sm);
-        } catch (Exception e) {
-            Logger.error(SyslogSenderUDP.class, e.getMessage());
-        }
-    }
-
 
 }

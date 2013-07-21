@@ -2,44 +2,50 @@ package executor.lightLogger.logger.syslog;
 
 import executor.lightLogger.Logger;
 
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Basic data structure for Syslog message. (RFC 5424)
+ * Syslog Message Format from RFC 5424 "The Syslog Protocol".
+ *
+ * @author cpieloth
  */
-public class SyslogMessage {
-    private final String structuredData = SyslogConstants.NIL;
-    private short prival = 0;
+public class SyslogMessage5424 extends ASyslogMessage {
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss'Z'");
+    private static final int MAX_HOSTNAME = 255;
+    private static final int MAX_APP_NAME = 48;
+    private static final int MAX_PROCID = 128;
+    private static final int MAX_MSGID = 32;
+    private static final String NIL = "-";
+    private static final byte NIL_ASCII = 0x2D;
+    private final String structuredData = NIL;
     private Integer version = 1;
-    private String hostname = SyslogConstants.NIL;
-    private Date timeStamp = null;
-    private String appName = SyslogConstants.NIL;
-    private String procID = SyslogConstants.NIL;
-    private String msgID = SyslogConstants.NIL;
-    private String msg = null;
+    private String appName = NIL;
+    private String procID = NIL;
+    private String msgID = NIL;
 
-    private static String toASCII(String s, int length) {
-        if (s.length() > length) {
-            Logger.error(SyslogMessage.class, "String to long!");
-            return s.substring(0, length).replaceAll("[^\\x21-\\x7E]", "");
-        } else {
-            return s.replaceAll("[^\\x21-\\x7E]", "");
+    public SyslogMessage5424() {
+    }
+
+    public SyslogMessage5424(String appName, String procID) {
+        this.appName = appName;
+        this.procID = procID;
+    }
+
+    public static void main(String[] args) {
+        SyslogMessage5424 sm = new SyslogMessage5424();
+        sm.setPrival(EFacility.LOCAL4, ESeverity.NOTICE);
+        sm.setDate(new Date(System.currentTimeMillis()));
+        sm.setAppName("SyslogTest");
+        sm.setMsg("fööösdfdf");
+
+        try {
+            System.out.println(new String(sm.getBytes(), ENCODING_UTF8));
+        } catch (Exception e) {
+            Logger.error(SyslogMessage5424.class, e.getMessage());
         }
-    }
 
-    public short getPrival() {
-        return prival;
-    }
-
-    public void setPrival(short prival) {
-        if (SyslogConstants.MIN_PRIVAL <= prival && prival <= SyslogConstants.MAX_PRIVAL)
-            this.prival = prival;
-        else
-            Logger.error(SyslogMessage.class, "prival not in range!");
-    }
-
-    public void setPrival(EFacility facility, ESeverity severity) {
-        this.prival = (short) (facility.code * 8 + severity.code);
     }
 
     public Integer getVersion() {
@@ -50,20 +56,9 @@ public class SyslogMessage {
         this.version = version;
     }
 
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostName(String hostname) {
-        this.hostname = toASCII(hostname, SyslogConstants.MAX_HOSTNAME);
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
+    @Override
+    public void setHostname(String hostname) {
+        this.hostname = toASCII(hostname, MAX_HOSTNAME);
     }
 
     public String getAppName() {
@@ -71,7 +66,15 @@ public class SyslogMessage {
     }
 
     public void setAppName(String appName) {
-        this.appName = toASCII(appName, SyslogConstants.MAX_APP_NAME);
+        this.appName = toASCII(appName, MAX_APP_NAME);
+    }
+
+    @Override
+    public String getTimestamp() {
+        if (date != null)
+            return TIME_FORMAT.format(date);
+        else
+            return NIL;
     }
 
     public String getProcID() {
@@ -79,7 +82,7 @@ public class SyslogMessage {
     }
 
     public void setProcID(String procID) {
-        this.procID = toASCII(procID, SyslogConstants.MAX_PROCID);
+        this.procID = toASCII(procID, MAX_PROCID);
     }
 
     public String getMsgID() {
@@ -87,47 +90,55 @@ public class SyslogMessage {
     }
 
     public void setMsgID(String msgID) {
-        this.msgID = toASCII(msgID, SyslogConstants.MAX_MSGID);
+        this.msgID = toASCII(msgID, MAX_MSGID);
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public byte[] buildSyslogMessage() throws Exception {
+    @Override
+    public byte[] getBytes() {
         StringBuilder sbHeader = new StringBuilder();
-        sbHeader.append(SyslogConstants.LT).append(prival).append(SyslogConstants.GT);
+        sbHeader.append(LT).append(getPrival()).append(GT);
         sbHeader.append(version);
-        sbHeader.append(SyslogConstants.SP);
-        if (timeStamp != null)
-            sbHeader.append(SyslogConstants.TIME_FORMAT.format(timeStamp));
-        else
-            sbHeader.append(SyslogConstants.NIL);
-        sbHeader.append(SyslogConstants.SP);
+        sbHeader.append(SP);
+        sbHeader.append(getTimestamp());
+        sbHeader.append(SP);
         sbHeader.append(hostname);
-        sbHeader.append(SyslogConstants.SP);
+        sbHeader.append(SP);
         sbHeader.append(appName);
-        sbHeader.append(SyslogConstants.SP);
+        sbHeader.append(SP);
         sbHeader.append(procID);
-        sbHeader.append(SyslogConstants.SP);
+        sbHeader.append(SP);
         sbHeader.append(msgID);
 
         byte[] headerByte;
-        headerByte = sbHeader.toString().getBytes(SyslogConstants.ENCODING_ASCII);
+        try {
+            headerByte = sbHeader.toString().getBytes(ENCODING_ASCII);
+        } catch (UnsupportedEncodingException e) {
+            Logger.error(SyslogMessage5424.class, "Could not encode header: " + e.getMessage());
+            return null;
+        }
 
         byte[] sdByte;
-        sdByte =(SyslogConstants.SP + structuredData).getBytes(SyslogConstants.ENCODING_ASCII);
+        try {
+            sdByte = (SP + structuredData).getBytes(ENCODING_ASCII);
+        } catch (UnsupportedEncodingException e) {
+            Logger.error(SyslogMessage5424.class, "Could not encode structured date: " + e.getMessage());
+            sdByte = new byte[2];
+            sdByte[0] = SP_ASCII;
+            sdByte[1] = NIL_ASCII;
+        }
 
         byte[] msgByte;
         if (msg != null && !"".equals(msg)) {
-            final byte[] tmp = msg.getBytes(SyslogConstants.ENCODING_UTF8);
-            msgByte = new byte[1 + tmp.length];
-            msgByte[0] = SyslogConstants.SP_ASCII;
-            System.arraycopy(tmp, 0, msgByte, 1, tmp.length);
+            final byte[] tmp;
+            try {
+                tmp = msg.getBytes(ENCODING_UTF8);
+                msgByte = new byte[1 + tmp.length];
+                msgByte[0] = SP_ASCII;
+                System.arraycopy(tmp, 0, msgByte, 1, tmp.length);
+            } catch (UnsupportedEncodingException e) {
+                Logger.error(SyslogMessageBSD.class, "Could not encode msg: " + e.getMessage());
+                msgByte = new byte[0];
+            }
         } else {
             msgByte = new byte[0];
         }
@@ -137,20 +148,5 @@ public class SyslogMessage {
         System.arraycopy(sdByte, 0, syslogMessage, headerByte.length, sdByte.length);
         System.arraycopy(msgByte, 0, syslogMessage, headerByte.length + sdByte.length, msgByte.length);
         return syslogMessage;
-    }
-
-    public static void main(String[] args) {
-        SyslogMessage sm = new SyslogMessage();
-        sm.setPrival(EFacility.LOCAL4, ESeverity.NOTICE);
-        sm.setTimeStamp(new Date(System.currentTimeMillis()));
-        sm.setAppName("SyslogTest");
-        sm.setMsg("fööösdfdf");
-
-        try {
-            System.out.println(new String(sm.buildSyslogMessage(), SyslogConstants.ENCODING_UTF8));
-        } catch (Exception e) {
-            Logger.error(SyslogMessage.class, e.getMessage());
-        }
-
     }
 }
