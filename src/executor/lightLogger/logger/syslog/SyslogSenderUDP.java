@@ -62,8 +62,17 @@ public class SyslogSenderUDP implements ISyslogSender {
 
     @Override
     public boolean sendMessage(ISyslogMessage syslogMsg) {
+        if (syslogMsg == null) {
+            Logger.error(SyslogSenderUDP.class, "Syslog message is null!");
+            return false;
+        }
+
+        final byte[] data = syslogMsg.getBytes();
+        if (data == null) {
+            Logger.error(SyslogSenderUDP.class, "No data to send!");
+            return false;
+        }
         try {
-            final byte[] data = syslogMsg.getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, this.address, this.port);
             DatagramSocket socket = new DatagramSocket();
             socket.send(packet);
@@ -73,11 +82,7 @@ public class SyslogSenderUDP implements ISyslogSender {
         } catch (IOException e) {
             Logger.error(SyslogSenderUDP.class, "Could not sent message: " + e.getMessage());
             return false;
-        } catch (Exception e) {
-            Logger.error(SyslogSenderUDP.class, e.getMessage());
-            return false;
         }
         return true;
     }
-
 }
