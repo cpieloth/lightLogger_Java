@@ -18,15 +18,6 @@ public interface ILogger {
 	public static final String UNKNOWN_NAME = "UNKNOWN_NAME";
 
 	/**
-	 * Initializes the logger with settings defined by the implementation.
-	 * 
-	 * @param properties
-	 *            Ready to read properties instance,
-	 * @return true if all properties are loaded.
-	 */
-	public boolean loadProperties(Properties properties);
-
-	/**
 	 * Gets the name of the logger. Identifier for the log messages, e.g. class
 	 * name.
 	 * 

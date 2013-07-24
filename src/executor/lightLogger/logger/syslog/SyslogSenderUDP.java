@@ -31,28 +31,9 @@ public class SyslogSenderUDP implements ISyslogSender {
         return instance;
     }
 
-    public static void main(String[] args) {
-        System.out.println("fff");
-        try {
-            SyslogSenderUDP syslogSender = SyslogSenderUDP.getInstance("192.168.0.117", 514);
-            SyslogMessageBSD sm = new SyslogMessageBSD();
-            sm.setPrival(EFacility.LOCAL1, ESeverity.ERROR);
-            sm.setHostname("executor");
-            sm.setTag("syslogtest");
-            sm.setMsg("st messagwereq42");
-            sm.setDate(new Date(System.currentTimeMillis()));
-            syslogSender.sendMessage(sm);
-        } catch (Exception e) {
-            Logger.error(SyslogSenderUDP.class, e.getMessage());
-        }
-    }
-
     @Override
     public boolean connect() {
-        if (address != null)
-            return true;
-        else
-            return false;
+        return address != null;
     }
 
     @Override
@@ -61,7 +42,7 @@ public class SyslogSenderUDP implements ISyslogSender {
     }
 
     @Override
-    public boolean sendMessage(ISyslogMessage syslogMsg) {
+    public synchronized boolean sendMessage(ISyslogMessage syslogMsg) {
         if (syslogMsg == null) {
             Logger.error(SyslogSenderUDP.class, "Syslog message is null!");
             return false;
