@@ -7,3 +7,6 @@ out/
 bin/
 .classpath
 .project
+
+# Scripts
+dist/

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="default" name="LightLogger - JAR file" basedir="../">
+
+	<target name="default" depends="setup,compile,buildjar" />
+
+	<property name="BIN" value="bin" />
+	<property name="DIST" value="dist" />
+	<property name="JAR" value="lightLogger.jar" />
+
+	<target name="setup">
+		<!-- some preparation -->
+	</target>
+
+	<target name="compile">
+		<delete dir="${BIN}" />
+		<mkdir dir="${BIN}" />
+		<javac destdir="${BIN}" srcdir="src" target="1.6" source="1.6" />
+
+		<copy todir="${BIN}">
+			<fileset dir="src">
+				<include name="**/*.properties" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="buildjar">
+		<mkdir dir="${DIST}" />
+		<delete dir="${DIST}/${JAR}" />
+
+		<jar destfile="${DIST}/${JAR}">
+            <fileset dir="${BIN}" />
+			<manifest>
+				<attribute name="Class-Path" value="." />
+			</manifest>
+		</jar>
+	</target>
+
+</project>
