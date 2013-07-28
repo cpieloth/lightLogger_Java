@@ -9,7 +9,9 @@ import executor.lightLogger.logger.syslog.SyslogSenderUDP;
 import java.util.Properties;
 
 /**
- * TODO
+ * Creates a logger for a syslog relay or collector.
+ *
+ * @author cpieloth
  */
 public class SyslogFactory extends ALoggerFactory {
 

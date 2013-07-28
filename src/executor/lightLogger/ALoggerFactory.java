@@ -9,7 +9,9 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * TODO
+ * Loads and configures a ILogger implementation.
+ *
+ * @author cpieloth
  */
 public abstract class ALoggerFactory {
 

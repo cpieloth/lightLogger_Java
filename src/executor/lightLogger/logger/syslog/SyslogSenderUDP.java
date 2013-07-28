@@ -8,6 +8,8 @@ import java.util.Date;
 
 /**
  * Sends a Syslog Message to a collector or relay.
+ *
+ * @author cpieloth
  */
 public class SyslogSenderUDP implements ISyslogSender {
 

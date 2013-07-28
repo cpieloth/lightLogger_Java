@@ -8,7 +8,9 @@ import executor.lightLogger.logger.syslog.*;
 import java.util.*;
 
 /**
- * TODO
+ * Logs to a syslog relay or collector.
+ *
+ * @author cpieloth
  */
 public class SyslogLogger extends ALogger {
 
@@ -115,12 +117,6 @@ public class SyslogLogger extends ALogger {
     @Override
     public void trace(Object message) {
         log(Default.TRACE, message);
-    }
-
-    public static void main(String[] args) {
-        SyslogLogger log = new SyslogLogger("fooo");
-        log.error("eerrroorrr");
-        log.warn("warrrnniinng");
     }
 
     public void setSender(ISyslogSender sender) {
